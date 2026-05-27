@@ -10,7 +10,7 @@ public final class ConsoleIO {
   private final Scanner scanner;
   private final PrintStream out;
 
-  // â”€â”€ input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── input ─────────────────────────────────────────────────────────────────
 
   public String readRequired(final String prompt) {
     String value;
@@ -36,12 +36,38 @@ public final class ConsoleIO {
       try {
         return Integer.parseInt(raw);
       } catch (final NumberFormatException ignored) {
-        out.println("  Invalid input. Please enter a number.");
+        out.println("  Invalid input. Please enter a whole number.");
       }
     }
   }
 
-  // â”€â”€ output â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  public double readDouble(final String prompt) {
+    while (true) {
+      out.print(prompt);
+      final String raw = scanner.nextLine().trim();
+      try {
+        return Double.parseDouble(raw);
+      } catch (final NumberFormatException ignored) {
+        out.println("  Invalid input. Please enter a decimal number (e.g. 12.5).");
+      }
+    }
+  }
+
+  public boolean readBoolean(final String prompt) {
+    while (true) {
+      out.print(prompt);
+      final String raw = scanner.nextLine().trim().toLowerCase();
+      if (raw.equals("s") || raw.equals("si") || raw.equals("true") || raw.equals("1")) {
+        return true;
+      } else if (raw.equals("n") || raw.equals("no") || raw.equals("false") || raw.equals("0")) {
+        return false;
+      } else {
+        out.println("  Invalid input. Please enter S/N.");
+      }
+    }
+  }
+
+  // ── output ────────────────────────────────────────────────────────────────
 
   public void println(final String message) {
     out.println(message);
