@@ -11,11 +11,13 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+@Service
 @RequiredArgsConstructor
-public final class UpdateMascotaService implements UpdateMascotaUseCase {
+public class UpdateMascotaService implements UpdateMascotaUseCase {
 
   private final UpdateMascotaPort updateMascotaPort;
   private final GetMascotaByIdPort getMascotaByIdPort;

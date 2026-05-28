@@ -1,11 +1,23 @@
 package com.jcaa.usersmanagement.infrastructure.adapter.persistence.config;
 
-public record DatabaseConfig(
-    String host, int port, String databaseName, String username, String password) {
-  private static final String URL_TEMPLATE =
-      "jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-  public String buildJdbcUrl() {
-    return String.format(URL_TEMPLATE, host, port, databaseName);
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+@Configuration
+public class DatabaseConfig {
+
+  private final DataSource dataSource;
+
+  public DatabaseConfig(final DataSource dataSource) {
+    this.dataSource = dataSource;
+  }
+
+  @Bean
+  public Connection connection() throws SQLException {
+    return dataSource.getConnection();
   }
 }

@@ -10,12 +10,13 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
-
+@Service
 @Log
 @RequiredArgsConstructor
-public final class CreateMascotaService implements CreateMascotaUseCase {
+public class CreateMascotaService implements CreateMascotaUseCase {
 
   private final SaveMascotaPort saveMascotaPort;
   private final Validator validator;

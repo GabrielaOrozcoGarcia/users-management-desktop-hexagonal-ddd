@@ -4,11 +4,13 @@ import com.jcaa.usersmanagement.application.port.in.GetAllMascotasUseCase;
 import com.jcaa.usersmanagement.application.port.out.GetAllMascotasPort;
 import com.jcaa.usersmanagement.domain.model.MascotaModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 @RequiredArgsConstructor
-public final class GetAllMascotasService implements GetAllMascotasUseCase {
+public class GetAllMascotasService implements GetAllMascotasUseCase {
 
   private final GetAllMascotasPort getAllMascotasPort;
 

@@ -15,10 +15,12 @@ import lombok.extern.java.Log;
 
 import java.util.Set;
 import jakarta.validation.ConstraintViolation;
+import org.springframework.stereotype.Service;
 
+@Service
 @Log
 @RequiredArgsConstructor
-public final class CreateUserService implements CreateUserUseCase {
+public class CreateUserService implements CreateUserUseCase {
 
   private final SaveUserPort saveUserPort;
   private final GetUserByEmailPort getUserByEmailPort;

@@ -7,6 +7,7 @@ import com.jcaa.usersmanagement.domain.model.UserModel;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +15,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.logging.Level;
 
+@Service
 @Log
 @RequiredArgsConstructor
-public final class EmailNotificationService {
+public class EmailNotificationService {
 
   private static final String SUBJECT_CREATED = "Tu cuenta ha sido creada — Gestión de Usuarios";
   private static final String SUBJECT_UPDATED =

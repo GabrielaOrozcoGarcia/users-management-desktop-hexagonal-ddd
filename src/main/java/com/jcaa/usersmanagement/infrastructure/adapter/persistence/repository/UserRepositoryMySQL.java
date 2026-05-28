@@ -15,6 +15,7 @@ import com.jcaa.usersmanagement.infrastructure.adapter.persistence.exception.Per
 import com.jcaa.usersmanagement.infrastructure.adapter.persistence.mapper.UserPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,9 +24,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 @Log
 @RequiredArgsConstructor
-public final class UserRepositoryMySQL
+public class UserRepositoryMySQL
     implements SaveUserPort,
         UpdateUserPort,
         GetUserByIdPort,
