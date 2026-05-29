@@ -3,7 +3,7 @@
 -- Gestión de Usuarios y Mascotas - Arquitectura Hexagonal
 -- =============================================
 
-CREATE DATABASE IF NOT EXISTS crud_usuarios
+CREATE DATABASE IF NOT EXISTS crud_usuarios_hex
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 

@@ -67,13 +67,12 @@ public class GlobalExceptionHandler {
     }
 
     // ── 500 Internal Server Error (catch-all) ────────────────────────────────
-
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(
-            final Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGenericException(final Exception ex) {
+        ex.printStackTrace(); // ← agregar esta línea temporalmente
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred. Please contact support.");
+                ex.getMessage() + (ex.getCause() != null ? " | Causa: " + ex.getCause().getMessage() : ""));
     }
 
     // ── helper ───────────────────────────────────────────────────────────────

@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +29,7 @@ import java.util.Optional;
 @Log
 @RequiredArgsConstructor
 public class UserRepositoryMySQL
-    implements SaveUserPort,
+        implements SaveUserPort,
         UpdateUserPort,
         GetUserByIdPort,
         GetUserByEmailPort,
@@ -36,34 +37,31 @@ public class UserRepositoryMySQL
         DeleteUserPort {
 
   private static final String SQL_INSERT =
-      "INSERT INTO users "
-      + "(id, name, email, password, role, status, created_at, updated_at) "
-      + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+          "INSERT INTO users "
+                  + "(id, name, email, password, role, status, created_at, updated_at) "
+                  + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
   private static final String SQL_UPDATE =
-      "UPDATE users SET name = ?, email = ?, password = ?, role = ?, status = ?, updated_at = NOW() "
-      + "WHERE id = ?";
+          "UPDATE users SET name = ?, email = ?, password = ?, role = ?, status = ?, updated_at = NOW() "
+                  + "WHERE id = ?";
 
   private static final String SQL_SELECT_BY_ID =
-      "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM users "
-      + "WHERE id = ? LIMIT 1";
+          "SELECT id, name, email, password, role, status, created_at, updated_at "
+                  + "FROM users WHERE id = ? LIMIT 1";
 
   private static final String SQL_SELECT_BY_EMAIL =
-      "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM users "
-      + "WHERE email = ? LIMIT 1";
+          "SELECT id, name, email, password, role, status, created_at, updated_at "
+                  + "FROM users WHERE email = ? LIMIT 1";
 
   private static final String SQL_SELECT_ALL =
-      "SELECT id, name, email, password, role, status, created_at, updated_at "
-      + "FROM users "
-      + "ORDER BY name ASC";
+          "SELECT id, name, email, password, role, status, created_at, updated_at "
+                  + "FROM users ORDER BY name ASC";
 
   private static final String SQL_DELETE =
-        "DELETE FROM users "
-        + "WHERE id = ?";
+          "DELETE FROM users WHERE id = ?";
 
-  private final Connection connection;
+  // ✅ DataSource en vez de Connection — pide conexión fresca en cada operación
+  private final DataSource dataSource;
 
   @Override
   public UserModel save(final UserModel user) {
@@ -81,12 +79,11 @@ public class UserRepositoryMySQL
 
   @Override
   public Optional<UserModel> getById(final UserId userId) {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_ID)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_ID)) {
       statement.setString(1, userId.value());
       final ResultSet resultSet = statement.executeQuery();
-      if (!resultSet.next()) {
-        return Optional.empty();
-      }
+      if (!resultSet.next()) return Optional.empty();
       return Optional.of(UserPersistenceMapper.fromResultSetToModel(resultSet));
     } catch (final SQLException exception) {
       throw PersistenceException.becauseFindByIdFailed(userId.value(), exception);
@@ -95,12 +92,11 @@ public class UserRepositoryMySQL
 
   @Override
   public Optional<UserModel> getByEmail(final UserEmail email) {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_EMAIL)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_BY_EMAIL)) {
       statement.setString(1, email.value());
       final ResultSet resultSet = statement.executeQuery();
-      if (!resultSet.next()) {
-        return Optional.empty();
-      }
+      if (!resultSet.next()) return Optional.empty();
       return Optional.of(UserPersistenceMapper.fromResultSetToModel(resultSet));
     } catch (final SQLException exception) {
       throw PersistenceException.becauseFindByEmailFailed(email.value(), exception);
@@ -109,7 +105,8 @@ public class UserRepositoryMySQL
 
   @Override
   public List<UserModel> getAll() {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ALL)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ALL)) {
       final ResultSet resultSet = statement.executeQuery();
       return UserPersistenceMapper.fromResultSetToModelList(resultSet);
     } catch (final SQLException exception) {
@@ -119,7 +116,8 @@ public class UserRepositoryMySQL
 
   @Override
   public void delete(final UserId userId) {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_DELETE)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_DELETE)) {
       statement.setString(1, userId.value());
       statement.executeUpdate();
     } catch (final SQLException exception) {
@@ -128,7 +126,8 @@ public class UserRepositoryMySQL
   }
 
   private void executeSave(final UserPersistenceDto dto) {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_INSERT)) {
       statement.setString(1, dto.id());
       statement.setString(2, dto.name());
       statement.setString(3, dto.email());
@@ -142,7 +141,8 @@ public class UserRepositoryMySQL
   }
 
   private void executeUpdate(final UserPersistenceDto dto) {
-    try (final PreparedStatement statement = connection.prepareStatement(SQL_UPDATE)) {
+    try (final Connection connection = dataSource.getConnection();
+         final PreparedStatement statement = connection.prepareStatement(SQL_UPDATE)) {
       statement.setString(1, dto.name());
       statement.setString(2, dto.email());
       statement.setString(3, dto.password());
@@ -157,6 +157,6 @@ public class UserRepositoryMySQL
 
   private UserModel findByIdOrFail(final UserId userId) {
     return getById(userId)
-        .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
+            .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
   }
 }
